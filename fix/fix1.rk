@@ -1,0 +1,13 @@
+STATUS_BYDESIGN
+STATUS_INPROGRESS
+
+rk:start
+   int foobar
+
+   print: "Enter an integer: "
+   read: foobar
+
+   foobar += 3      * reads foobar again
+
+   print: "Integer + 3 = " foobar
+rk:end
