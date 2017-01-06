@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "rk-include.h"
 
-int error_count = 0, variable_count = 0, goto_count = 0;
+int error_count = 0, variable_count = 0, jump_count = 0;
 int last_val = 0;
 int loop_count = 0;
 struct variable var_list[100];
@@ -20,8 +20,8 @@ void rk_init(void)
     /* initialize variable list */
     memset(var_list, 0, sizeof(var_list));
 
-    /* initialize goto list */
-    memset(gotos, 0, sizeof(gotos));
+    /* initialize jump list */
+    memset(jumps, 0, sizeof(jumps));
 
     /* initialize while list */
     memset(loop_jump, 0L, sizeof(loop_jump));
@@ -59,8 +59,8 @@ void rk_cleanup(void)
             free(var_list[i].value);
     }
 
-    for (i = 0; i < goto_count; i++)
-        free(gotos[i].name);
+    for (i = 0; i < jump_count; i++)
+        free(jumps[i].name);
 }
 
 void rk_parse(FILE *src, FILE *dest, char *buf)
@@ -75,16 +75,13 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
     printf("---CHECKING \e[31m%s\e[0m---\n", buf);
 #endif
 
-    /* check for comments and error */
+    /* check for comments */
     switch (*buf) {
       case '*':
         wait_for_character(src, '\n', 0);
         return;
       case ';':
         wait_for_character(src, ';', 0);
-        return;
-      case '\0':
-        error_count++;
         return;
     }
 
@@ -146,16 +143,16 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
         fseek(src, loop_jump[loop_count-1], SEEK_SET);
     }
 
-    /* go to the goto */
-    else if (existing_goto(buf) != -1) {
+    /* go to the jump */
+    else if (existing_jump(buf) != -1) {
         reset_last_op();
         jump(src, buf);
     }
 
-    /* goto (jump) declaration */
-    else if (is_goto_keyword(buf)) {
+    /* jump (goto) declaration */
+    else if (is_jump_keyword(buf)) {
         strset(last_op, "blank");
-        add_goto(src, buf);
+        add_jump(src, buf);
     }
 
     /* existing variable */

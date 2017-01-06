@@ -123,8 +123,8 @@ void main_cleanup(void)
 
     for (i = 0; i < variable_count; i++)
         fprintf(dest, "Variable %d: %s %s = %p\n", i, VARTYPE[var_list[i].type], var_list[i].name, var_list[i].value);
-    for (i = 0; i < goto_count; i++)
-        fprintf(dest, "Jump %d: %s at %d\n", i, gotos[i].name, (int) gotos[i].offset);
+    for (i = 0; i < jump_count; i++)
+        fprintf(dest, "Jump %d: %s at %d\n", i, jumps[i].name, (int) jumps[i].offset);
 
     /* free filenames, flush and close files */
     free(src_fname);

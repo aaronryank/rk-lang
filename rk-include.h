@@ -72,11 +72,11 @@ enum {
     OP_RIGHT
 } eq_keyword_types;
 
-/* goto's */
+/* jumps */
 struct {
     long offset;
     char *name;
-} gotos[100];
+} jumps[100];
 
 /* globals */
 extern FILE  *src, *dest;     /* source, output */
@@ -84,7 +84,7 @@ extern int   ARGS[];          /* command-line argument parsing */
 extern int   last_arg;        /* last parsed argument */
 extern int   variable_count;  /* total number of variables, also used as an index */
 extern int   error_count;     /* total number of errors */
-extern int   goto_count;      /* total number of gotos */
+extern int   jump_count;      /* total number of jumps */
 extern int   loop_count;      /* total number of loops */
 extern long  loop_jump[100];  /* loop jumps */
 
@@ -121,8 +121,8 @@ extern void remove_int(int (*)[100], int, int);
 
 /* jump.c functions */
 extern void jump(FILE *, char *);
-extern void add_goto(FILE *, char *);
-extern int  existing_goto(char *);
+extern void add_jump(FILE *, char *);
+extern int  existing_jump(char *);
 
 /* fileops.c functions */
 extern void wait_for_character(FILE *, int, int);
@@ -178,7 +178,7 @@ extern void read_loop(FILE *, FILE *);
 #define is_reserved_keyword(s)    str_eq(s, RESERVED)
 #define is_logic_keyword(s)       str_eq(s, LOGIC_KEYWORDS)
 #define is_assignment_operator(s) str_eq(s, ASSIGNMENT_OPERATORS)
-#define is_goto_keyword(s)        (strindex(s, "-") == ((signed int) strlen(s)-1))
+#define is_jump_keyword(s)        (strindex(s, "-") == ((signed int) strlen(s)-1))
 #define is_function_keyword(s)    (strindex(s, ":") == ((signed int) strlen(s)-1))
 
 #define dummy() // for empty if-else bodies
