@@ -1,16 +1,34 @@
-OBJ := main.o readfile.o strfunc.o rk-main.o rk-func.o const.o variable.o logic.o equation.o jump.o fileops.o
-CC := gcc
-CFLAGS := -g -Wall # -DVAR_DEBUG -DWHILE_DEBUG -DLOGIC_DEBUG -DPARSE_DEBUG -DOP_DEBUG -DEQ_DEBUG
+#-----Macros---------------------------------
+INCLUDES = -I.
 
-EXECUTABLE := rk
+CC = gcc
+CFLAGS = -g $(INCLUDES) -Wall
 
-all: $(EXECUTABLE)
+#-----Suffix Rules---------------------------
+# set up C suffixes and relationship between .c and .o files
 
-$(EXECUTABLE): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(EXECUTABLE)
+.SUFFIXES: .c
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+.c :
+	$(CC) $(CFLAGS) $< -o $@ -lgcc
+
+#-----File Dependencies----------------------
+SRC = const.c equation.c fileops.c jump.c logic.c main.c readfile.c rk-func.c rk-main.c strfunc.c variable.c
+
+OBJ = $(addsuffix .o, $(basename $(SRC)))
+
+rk: $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $(OBJ)
+
+#-----Other stuff----------------------------
+depend:
+	makedepend $(CFLAGS) -Y $(SRC)
 
 clean:
-	rm $(OBJ)
+	rm -f $(OBJ)
 
 reset:
-	rm $(OBJ) $(EXECUTABLE)
+	rm -f $(OBJ) rk
