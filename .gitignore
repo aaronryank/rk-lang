@@ -9,3 +9,11 @@ rk
 
 # test files
 */*.test
+
+# links, etc.
+*/rk
+*/make
+
+# rk output files
+*/rk.out
+rk.out
