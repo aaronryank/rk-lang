@@ -9,26 +9,20 @@
 // jump add_jump
 void add_jump(FILE *src, char *name)
 {
-    /* shorten, since it's used often */
-    register int i = jump_count;
+    int i = jump_count;
 
-    /* remove dash */
     strsnip(name, strlen(name)-1);
 
-    /* pre-existing jump */
     if (existing_jump(name) != -1)
         return;
 
-    /* set name */
     jumps[i].name = malloc(MAXWORD);
     memset(jumps[i].name, 0, MAXWORD);
     memcpy(jumps[i].name, name, strlen(name));
 
-    /* set file position */
     long offset     = ftell(src);
     jumps[i].offset = offset;
 
-    /* increment count, woo #uselesscomments */
     jump_count++;
 }
 

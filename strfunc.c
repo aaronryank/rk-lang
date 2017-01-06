@@ -86,7 +86,7 @@ char *reverse(char *str)
     /* this is inefficient as he'll */
     if (str != NULL)
     {
-        len = strlen (str);
+        len = strlen(str);
         if (len > 1) {
             src = str;
             dst = src + len - 1;

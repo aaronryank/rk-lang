@@ -80,10 +80,8 @@ void rkprint(int idx)
     }
 
     /* print the string */
-    while (str[i]) {
-        rkputchar(str[i]);
-        i++;
-    }
+    while (str[i])
+        rkputchar(str[i++]);
 
     /* helpful for integers */
     if ((var_list[idx].type == INTEGER) || (var_list[idx].type == BOOLEAN))
@@ -96,9 +94,9 @@ void rkprint(int idx)
 // jump rkputchar
 void rkputchar(char c)
 {
-    static int escape = 0;
-    static int ecode = 0;
-    static int e_idx = 0;
+    static volatile int escape = 0;
+    static volatile int ecode = 0;
+    static volatile int e_idx = 0;
 
     if ((c == '^') && (escape == 0)) {
         escape = 1;

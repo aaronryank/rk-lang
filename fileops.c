@@ -19,6 +19,7 @@ void wait_for_character(FILE *f, int delim, int print)
             rkputchar(c);
 }
 
+// this is kinda bad but I don't know how to improve it.
 // jump break_from
 void break_from(FILE *f, char *open, char *close)
 {
