@@ -125,12 +125,11 @@ int getval(char *val)
         if ((var_list[i].type == INTEGER) || (var_list[i].type == BOOLEAN) || (var_list[i].type == CHARACTER)) {
             return (int) var_list[i].value;
         } else {
-            printf("Invalid type for variable %s: Expected integer, boolean or character\n", var_list[i].name);
+            fprintf(stderr, "Invalid type for variable %s: Expected integer, boolean or character\n", var_list[i].name);
             return 0;
         }
     }
     else if ((val[0] == '\'') && (val[2] == '\'')) {
-        printf("CharacteR!!!\n");
         return val[1];
     }
     else if (isdigit(*val)) {

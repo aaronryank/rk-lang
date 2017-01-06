@@ -5,6 +5,7 @@
 void read_loop(FILE *src, FILE *dest)
 {
     char buf[MAXWORD], *delim;
+    volatile int c, ret;
 
     memset(buf, 0, sizeof(buf));
     delim = malloc(MAXWORD);
@@ -12,12 +13,6 @@ void read_loop(FILE *src, FILE *dest)
     while (getword(src, buf, " \n"))
         if (!strcmp(buf, "rk:start"))
             break;
-
-/*       --- redesign this loop ---
-    while (getword(src, buf, " \n", MAXWORD))
-        rk_parse(src, dest, buf);
-*/
-    int c, ret;
 
     ret = 0;
     while (!ret) {
@@ -30,7 +25,7 @@ void read_loop(FILE *src, FILE *dest)
             ungetc(c, src);
         }
 
-        /* if `c == '"'`, will stop at first " read, invalidating the whole operation and missing a character. */
+        /* if `c == '"'`, getword will stop at first " read, invalidating the whole operation and missing a character. */
         if (!getword(src, buf, delim)) {
             ret = 1;
         } else {
@@ -42,4 +37,6 @@ void read_loop(FILE *src, FILE *dest)
             memset(buf, 0, sizeof(buf));
         }
     }
+
+    free(delim);
 }
