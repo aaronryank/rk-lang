@@ -6,53 +6,54 @@
 
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
 
-// jump add_goto
-void add_goto(FILE *src, char *name)
+// jump add_jump
+void add_jump(FILE *src, char *name)
 {
     /* shorten, since it's used often */
-    register int i = goto_count;
+    register int i = jump_count;
 
     /* remove dash */
     strsnip(name, strlen(name)-1);
 
-    if (existing_goto(name) != -1)
+    /* pre-existing jump */
+    if (existing_jump(name) != -1)
         return;
 
     /* set name */
-    gotos[i].name = malloc(MAXWORD);
-    memset(gotos[i].name, 0, MAXWORD);
-    memcpy(gotos[i].name, name, strlen(name));
+    jumps[i].name = malloc(MAXWORD);
+    memset(jumps[i].name, 0, MAXWORD);
+    memcpy(jumps[i].name, name, strlen(name));
 
     /* set file position */
     long offset     = ftell(src);
-    gotos[i].offset = offset;
+    jumps[i].offset = offset;
 
     /* increment count, woo #uselesscomments */
-    goto_count++;
+    jump_count++;
 }
 
 // jump jump  * oh crap *
 /* I will be using goto statements in this function
    that implements gotos. Deal with it. */
-void jump(FILE *src, char *goto_name)
+void jump(FILE *src, char *jump_name)
 {
     int i;
 
-    for (i = 0; i < goto_count; i++)
-        if (!strcmp(gotos[i].name, goto_name))
+    for (i = 0; i < jump_count; i++)
+        if (!strcmp(jumps[i].name, jump_name))
             goto end;
 
 end:
-    fseek(src, gotos[i].offset, SEEK_SET);
+    fseek(src, jumps[i].offset, SEEK_SET);
 }
 
-// jump existing_goto
-int existing_goto(char *name)
+// jump existing_jump
+int existing_jump(char *name)
 {
     int i;
 
-    for (i = 0; i < goto_count; i++)
-        if (!strcmp(gotos[i].name, name))
+    for (i = 0; i < jump_count; i++)
+        if (!strcmp(jumps[i].name, name))
             return i;
 
     return -1;
