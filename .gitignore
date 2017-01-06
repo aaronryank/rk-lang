@@ -1,1 +1,8 @@
+# vim temp files
 *.swp
+
+# c output files
+*.o
+
+# executable
+rk
