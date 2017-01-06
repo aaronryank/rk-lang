@@ -123,7 +123,7 @@ int geteq(char *val)
     }
 }
 
-void mod_op(int (*op)[], int idx, int order)
+void mod_eq_op(int (*op)[], int idx, int order)
 {
     if (order == 1) {
         if ((*op)[idx] == MULT)
@@ -175,7 +175,7 @@ int compute_eq(void)
                 (in_range(op[j], PLUS, MINUS) && (i == 2)) ||
                 (in_range(op[j], AND, XOR) && (i == 3)))   {
 
-                mod_op(&op, j, i);
+                mod_eq_op(&op, j, i);
                 remove_int(&op, j, 2);
                 s -= 2;
                 j -= 2;

@@ -6,8 +6,11 @@
 
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
 
-// jump reset_logic
-/* reset logic variables */
+enum { UNDEF, LT, GT, LEQ, GEQ, EQ, NEQ, AND, OR };
+/*            <   >   <=   >=   ==  !=   &&   || */
+
+
+// jump reset_logic     reset logic variables
 void reset_logic(void)
 {
     int i;
@@ -20,8 +23,7 @@ void reset_logic(void)
     memset(logic.keyword, 0, MAXWORD);
 }
 
-// jump getop
-/* get operator index from val */
+// jump getop      get operator index from val
 int getop(char *val)
 {
     enum {
@@ -44,78 +46,72 @@ int getop(char *val)
         return AND;
     else if (!strcmp(val, "||"))
         return OR;
-    return UNDEF;
+    else
+        return getval(val);
+}
+
+void mod_logic_op(int (*op)[], int idx, int order)
+{
+    if (order == 1) {
+        if ((*op)[idx] == LT)
+            (*op)[idx-1] = ((*op)[idx-1] < (*op)[idx+1]);
+        else if ((*op)[idx] == GT)
+            (*op)[idx-1] = ((*op)[idx-1] > (*op)[idx+1]);
+        else if ((*op)[idx] == LEQ)
+            (*op)[idx-1] = ((*op)[idx-1] <= (*op)[idx+1]);
+        else if ((*op)[idx] == GEQ)
+            (*op)[idx-1] = ((*op)[idx-1] >= (*op)[idx+1]);
+    }
+
+    else if (order == 2) {
+        if ((*op)[idx] == EQ)
+            (*op)[idx-1] = ((*op)[idx-1] == (*op)[idx+1]);
+        else if ((*op)[idx] == NEQ)
+            (*op)[idx-1] = ((*op)[idx-1] != (*op)[idx+1]);
+    }
+
+    else if (order == 3) {
+        if ((*op)[idx] == AND)
+            (*op)[idx-1] = ((*op)[idx-1] && (*op)[idx+1]);
+        else if ((*op)[idx] == OR)
+            (*op)[idx-1] = ((*op)[idx-1] || (*op)[idx+1]);
+    }
 }
 
 // jump compute_logic
 int compute_logic(void)
 {
-    enum {
-        UNDEF, LT, GT, LEQ, GEQ, EQ, NEQ, AND, OR
-    /*         <   >   <=   >=   ==  !=   &&   || */
-    };
+    int op[100] = {0};
+    int i, j, s;
 
-    int val[100]  = {0};
-    int i;
+    s = logic.idx;
 
 #ifdef LOGIC_DEBUG
-    for (i = 0; i < logic.idx; i++)
+    for (i = 0; i < s; i++)
         printf("%s ", logic.op[i]);
     putchar('\n');
 #endif
 
-    for (i = 0; i < logic.idx; i++)
-        val[i] = (odd(i) ? getop(logic.op[i]) : getval(logic.op[i]));
+    for (i = 0; i < s; i++)
+        op[i] = getop(logic.op[i]);
 
 #ifdef LOGIC_DEBUG
-    for (i = 0; i < logic.idx; i++)
-        printf("%d ", val[i]);
+    for (i = 0; i < s; i++)
+        printf("%d ", op[i]);
     putchar('\n');
 #endif
 
-    for (i = 1; i < logic.idx; i += 2) {
+    for (i = 1; i <= 3; i++) {
+        for (j = 1; j <= s; j += 2) {
+            if ((in_range(op[j], LT, GEQ) && (i == 1))   ||
+                (in_range(op[j], EQ, NEQ) && (i == 2))   ||
+                (in_range(op[j], AND, OR) && (i == 3)))  {
 
-        if (val[i] == LT)
-            val[i-1] = (val[i-1] < val[i+1]);
-        else if (val[i] == GT)
-            val[i-1] = (val[i-1] > val[i+1]);
-        else if (val[i] == LEQ)
-            val[i-1] = (val[i-1] <= val[i+1]);
-        else if (val[i] == GEQ)
-            val[i-1] = (val[i-1] >= val[i+1]);
-
-        if ((val[i] > UNDEF) && (val[i] < EQ)) {
-            remove_int(&val, i, 2);
-            i = 1;
-            logic.idx -= 2;
-        }
-    }
-
-    for (i = 1; i < logic.idx; i += 2) {
-
-        if (val[i] == EQ)
-            val[i-1] = (val[i-1] == val[i+1]);
-        else if (val[i] == NEQ)
-            val[i-1] = (val[i-1] != val[i+1]);
-
-        if ((val[i] > GEQ) && (val[i] < AND)) {
-            remove_int(&val, i, 2);
-            i = 1;
-            logic.idx -= 2;
-        }
-    }
-
-    for (i = 1; i < logic.idx; i += 2) {
-
-        if (val[i] == AND)
-            val[i-1] = (val[i-1] && val[i+1]);
-        else if (val[i] == OR)
-            val[i-1] = (val[i-1] || val[i+1]);
-
-        if ((val[i] == AND) || (val[i] == OR)) {
-            remove_int(&val, i, 2);
-            i = 1;
-            logic.idx -= 2;
+                mod_logic_op(&op, j, i);
+                remove_int(&op, j, 2);
+                s -= 2;
+                j -= 2;
+            }
         }
     }
 
@@ -125,7 +121,7 @@ int compute_logic(void)
     printf("\nReturning %d\n", val[0]);
 #endif
 
-    return val[0];
+    return op[0];
 }
 
 // jump add_logic

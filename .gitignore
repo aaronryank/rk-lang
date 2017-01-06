@@ -6,3 +6,6 @@
 
 # executable
 rk
+
+# test files
+*/*.test
