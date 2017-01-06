@@ -1,0 +1,173 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "rk-include.h"
+
+int error_count = 0, variable_count = 0, goto_count = 0;
+int last_val = 0;
+int loop_count = 0;
+struct variable var_list[100];
+long loop_jump[100];
+char *last_op;
+
+void rk_init(void)
+{
+    /* allocate space for last_op */
+    last_op = malloc(MAXWORD);
+    memset(last_op, 0, MAXWORD);
+    memcpy(last_op, "blank", 5);
+
+    /* initialize variable list */
+    memset(var_list, 0, sizeof(var_list));
+
+    /* initialize goto list */
+    memset(gotos, 0, sizeof(gotos));
+
+    /* initialize while list */
+    memset(loop_jump, 0L, sizeof(loop_jump));
+
+    /* initialize eq op */
+    eq.compute    = compute_eq;
+    eq.assign     = assign_eq;
+    eq.reset      = reset_eq;
+    eq.add        = add_eq;
+    eq.set        = set_eq;
+    eq.idx        = eq.in = eq.last = 0;
+    eq.assignment = malloc(MAXWORD);
+
+    /* initialize logic */
+    memset(logic.op, 0, sizeof(logic.op));
+    logic.compute = compute_logic;
+    logic.reset   = reset_logic;
+    logic.add     = add_logic;
+    logic.set     = set_logic;
+    logic.in      = logic.idx = 0;
+    logic.keyword = malloc(MAXWORD);
+}
+
+void rk_cleanup(void)
+{
+    int i;
+
+    free(last_op);
+    free(eq.assignment);
+    free(logic.keyword);
+
+    for (i = 0; i < variable_count; i++) {
+        free(var_list[i].name);
+        if (var_list[i].type == STRING)
+            free(var_list[i].value);
+    }
+
+    for (i = 0; i < goto_count; i++)
+        free(gotos[i].name);
+}
+
+void rk_parse(FILE *src, FILE *dest, char *buf)
+{
+    int i;
+
+    /* check for empty string */
+    if (!strcmp(buf, ""))
+        return;
+
+#ifdef PARSE_DEBUG
+    printf("---CHECKING \e[31m%s\e[0m---\n", buf);
+#endif
+
+    /* check for comments and error */
+    switch (*buf) {
+      case '*':
+        wait_for_character(src, '\n', 0);
+        return;
+      case ';':
+        wait_for_character(src, ';', 0);
+        return;
+      case '\0':
+        error_count++;
+        return;
+    }
+
+#ifdef PARSE_DEBUG
+    printf("---PARSING  \e[32m%s\e[0m---\n", buf);
+#endif
+
+    /* end of code */
+    if (!strcmp(buf, "rk:end")) {
+        wait_for_character(src, -1, 0);
+    }
+
+    /* variable type declaration */
+    else if (set_next_variable(buf)) {
+        reset_last_op();
+    }
+
+    /* assignment operator, triggers eq equation */
+    else if (is_assignment_operator(buf) && (eq.in == 0)) {
+        eq.set(buf);
+        reset_last_op();
+    }
+
+    /* logic keyword, triggers logic evaluation */
+    else if (is_logic_keyword(buf) && (logic.in == 0)) {
+        logic.set(buf);
+        reset_last_op();
+    }
+
+    /* add buf to logic */
+    else if (logic.in == 1) {
+        logic.add(buf);
+    }
+
+    /* add buf to equation */
+    else if ((eq.in == 1) && !eq.add(buf)) {
+        dummy();
+    }
+
+    /* string literals */
+    else if ((buf[0] == '\"') && (buf[strlen(buf)-1] == '\"')) {
+        remove_quotes(buf);
+        operate(44, buf, 1);
+    }
+
+    /* operators that require no right-hand value */
+    else if (!strcmp(buf, "--") || !strcmp(buf, "++")) {
+        strset(last_op, buf);
+        operate(last.var_idx, 0, 0);
+    }
+
+    /* functions */
+    else if (is_function_keyword(buf)) {
+        strset(last_op, buf);
+    }
+
+    /* repeat the loop */
+    else if (!strcmp(buf, "done")) {
+        fseek(src, loop_jump[loop_count-1], SEEK_SET);
+    }
+
+    /* go to the goto */
+    else if (existing_goto(buf) != -1) {
+        reset_last_op();
+        jump(src, buf);
+    }
+
+    /* goto (jump) declaration */
+    else if (is_goto_keyword(buf)) {
+        strset(last_op, "blank");
+        add_goto(src, buf);
+    }
+
+    /* existing variable */
+    else if ((i = existing_variable(buf)) != -1) {
+        last.var_idx = i;
+        if (strcmp(last_op, "blank"))
+            operate(i, 0, 0);
+    }
+
+    /* nonexistent variable */
+    else {
+        create_variable(buf);
+        reset_last_op();
+    }
+}

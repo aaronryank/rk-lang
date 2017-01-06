@@ -1,0 +1,6 @@
+#!/home/ryan/bin/rk
+rk:start
+   str test = "Hello, world!^n"
+
+   print: test
+rk:end

@@ -1,0 +1,41 @@
+#!/home/ryan/bin/rk
+rk:start
+
+   int max
+   i = 0 j = 0
+   key chr
+
+   print: "Enter size: "
+   read: max
+
+   if max > 50 then
+      print: "Too large!^n"
+      rk:end
+   fi if max < 2 then
+      print: "Too small!^n"
+      rk:end
+   fi
+
+   print: "Enter character: "
+   read: chr
+   print: "Pyramid:^n"
+
+   outer-
+   j = 0
+
+   inner-
+   print: chr
+   int j += 1
+
+   if j < i then
+      inner
+   fi
+
+   i += 1
+   print: "^n"
+
+   if i != max then
+      outer
+   fi
+
+rk:end

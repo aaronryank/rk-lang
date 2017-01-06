@@ -1,0 +1,13 @@
+rk:start
+   int test
+
+   *       18    15  12
+   test = 3 x 6 - 3 - 3
+
+   print: test "^n" int
+
+   *         20  10   20
+   test = 5 x 4 / 2 + 10
+
+   print: test "^n
+rk:end

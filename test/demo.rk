@@ -1,0 +1,68 @@
+#!/home/ryan/bin/rk
+This is a demonstration of RKLANG.
+It has a very strange syntax, but uses some cool stuff.
+For example, you can write whatever you want before 'rk:start' <- #thatwasrisky
+ as it's all ignored.
+This is useful for documentation.
+
+rk:start
+   print: "Welcome to rklang!^n"                                                                                   * control characters begin with ^
+   "Operations and functions are stored so that you can call them multiple times without restating the name.^n"    * 'print:' was already the last function so it's automatically called
+   "Everything is based on the space character, except single-line comments.^n"                                    * this is not a single-line comment. ;
+   "^nYou can get user input with the 'read:' function.^n"
+
+   int testInt
+   str testStr
+   key testKey
+   bool testBool
+
+   print: "String: "
+   read: testStr
+   print: "Integer: "
+   read: testInt
+   print: "Character: "
+   read: testKey
+   print: "Boolean: "
+   read: testBool
+
+   print: "You entered: `" testStr "' `" testInt "^b' `" testKey "' `" testBool "^b'^n"
+
+   int test
+   print: "^nEnter integer for logic test: "
+   read: test
+
+   if test == 3 then
+      print: "You entered 3!^n"
+   fi if test == 2 then
+      print: "You entered 2!^n"
+   fi if test == 1 then
+      print: "You entered 1!^n"
+   fi if test > 3 || test < 1 then
+      print: "You entered a value out of range!^n"
+   fi
+
+   print: "^n"
+
+   while test != 0 do
+      print: "Enter 0 to break out of loop: "
+      read: test
+   done
+
+   print: "^nNested loops:"
+
+   int1 = 0 int2 = 0
+
+   while int1 <= 10 do
+      while int2 < int1 do
+         print: "-"
+         int int2 += 1
+      done
+      int1 += 1 int2 = 0
+      print: "^n"
+   done
+
+   print: "Finished!^n"
+rk:end
+
+Likewise, everything after 'rk:end' is ignored.
+Everything is delimited spaces. Nothing else. Additional whitespace is ignored.
