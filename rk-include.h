@@ -156,6 +156,8 @@ extern void rk_parse(FILE *, FILE *, char *);
 /* readfile.c functions */
 extern void read_loop(FILE *, FILE *);
 
+// nm
+
 /* macros */
 #define MAXWORD 1024
 #define RESET_LAST_OP 0
