@@ -5,32 +5,42 @@
 #include "rk-include.h"
 
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
+#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
 
 char escape_code[100];
 
 // jump rkread
-int rkread(int type)
+void rkread(int idx)
 {
-    char buf[MAXWORD] = {0};
+    char *buf;
     int c, i;
+    int type = var_list[idx].type;
 
-    for (i = 0; ((c = getchar()) != EOF) && (c != ' ') && (c != '\n'); i++)
-        buf[i] = c;
+    buf = malloc(MAXWORD);
+    memset(buf, 0, MAXWORD);
 
-    buf[i+1] = '\0';
+    getword(stdin, buf, "\n");
 
-    if (type == BOOLEAN) {
+    if (type == CHARACTER) {
+        var_list[idx].value = (void *) buf[0];
+    }
+    else if (type == BOOLEAN) {
         if (!strcmp(buf, "true"))
-            return 1;
+            var_list[idx].value = (void *) 1;
         else if (!strcmp(buf, "false"))
-            return 0;
+            var_list[idx].value = (void *) 0;
         else
-            return buf[0] - '0';
-    } else if (type == INTEGER) {
-        return atoi(buf);
+            var_list[idx].value = ((void *) (buf[0] - '0'));
+    }
+    else if (type == INTEGER) {
+        var_list[idx].value = (void *) atoi(buf);
+    }
+    else {
+        var_list[idx].value = malloc(MAXWORD);
+        memcpy(var_list[idx].value, buf, strlen(buf));
     }
 
-    return 0;
+    free(buf);
 }
 
 // jump remove_int
@@ -45,14 +55,42 @@ void remove_int(int (*arr)[], int idx, int count)
 }
 
 // jump rkprint
-void rkprint(char *str)
+void rkprint(int idx)
 {
     int i = 0;
 
+    char *str = malloc(MAXWORD);
+    memset(str, 0, MAXWORD);
+
+    /* set string */
+    if (var_list[idx].type == INTEGER) {
+        itoa((int) var_list[idx].value, str);
+    }
+    else if (var_list[idx].type == CHARACTER) {
+        str[0] = (char) var_list[idx].value;
+    }
+    else if (var_list[idx].type == BOOLEAN) {
+        if ((int) var_list[idx].value == 0)
+            memcpy(str, "false", 5);
+        else
+            memcpy(str, "true", 4);
+    }
+    else {
+        memcpy(str, var_list[idx].value, strlen((char *) var_list[idx].value));
+    }
+
+    /* print the string */
     while (str[i]) {
         rkputchar(str[i]);
         i++;
     }
+
+    /* helpful for integers */
+    if ((var_list[idx].type == INTEGER) || (var_list[idx].type == BOOLEAN))
+        putchar(' ');
+
+    /* yup */
+    free(str);
 }
 
 // jump rkputchar

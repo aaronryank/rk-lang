@@ -112,9 +112,9 @@ extern int chr_eq(int, const char *);
 extern int str_eq(const char *, const char **);
 
 /* rk-func.c functions */
-extern void rkprint(char *);
+extern void rkprint(int);
 extern void rkputchar(char);
-extern int  rkread(int);
+extern void rkread(int);
 
 /* still don't know where to put this, currently in rk-func.c */
 extern void remove_int(int (*)[100], int, int);
@@ -155,8 +155,6 @@ extern void rk_parse(FILE *, FILE *, char *);
 
 /* readfile.c functions */
 extern void read_loop(FILE *, FILE *);
-
-// nm
 
 /* macros */
 #define MAXWORD 1024

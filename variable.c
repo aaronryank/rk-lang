@@ -98,39 +98,9 @@ void operate(int idx, char *val, int t)
     } else if (!strcmp(last_op, "++")) {
         var_list[idx].value = ((void *) ((int) var_list[idx].value + 1));
     } else if (!strcmp(last_op, "print:")) {
-
-        memset(str, 0, MAXWORD);
-
-        if (var_list[idx].type == INTEGER) {
-            itoa((int) var_list[idx].value, str);
-        } else if (var_list[idx].type == CHARACTER) {
-            str[0] = (char) var_list[idx].value;
-        } else if (var_list[idx].type == BOOLEAN) {
-            if (var_list[idx].value == 0) {
-                memcpy(str, "false", 5);
-            } else {
-                memcpy(str, "true", 4);
-            }
-        } else {
-            memcpy(str, var_list[idx].value, strlen((char *) var_list[idx].value));
-        }
-
-        rkprint(str);
-
-        if ((var_list[idx].type == INTEGER) || (var_list[idx].type == BOOLEAN))
-            putchar(' ');
-
+        rkprint(idx);
     } else if (!strcmp(last_op, "read:")) {
-        if ((var_list[idx].type == INTEGER) || (var_list[idx].type == BOOLEAN)) {
-            var_list[idx].value = (void *) rkread(var_list[idx].type);
-        } else if (var_list[idx].type == CHARACTER) {
-            var_list[idx].value = (void *) getchar();
-            while (getchar() != '\n')
-                continue;
-        } else if ((var_list[idx].type == STRING) || (var_list[idx].type == UNTYPED)) {
-            var_list[idx].value = malloc(MAXWORD);
-            getword(stdin, var_list[idx].value, "\n");
-        }
+        rkread(idx);
     }
 
     if (t == 1)
