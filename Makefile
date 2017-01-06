@@ -1,11 +1,12 @@
 #-----Macros---------------------------------
-INCLUDES = -I.
+
+# debug definitions
+# VAR_DEBUG, WHILE_DEBUG, LOGIC_DEBUG, PARSE_DEBUG, OP_DEBUG, EQ_DEBUG
 
 CC = gcc
-CFLAGS = -g $(INCLUDES) -Wall
+CFLAGS = -g -Wall
 
 #-----Suffix Rules---------------------------
-# set up C suffixes and relationship between .c and .o files
 
 .SUFFIXES: .c
 
