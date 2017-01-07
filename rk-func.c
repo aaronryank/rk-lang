@@ -16,15 +16,17 @@ void rkread(int idx)
     int c, i;
     int type = var_list[idx].type;
 
+    if (type == CHARACTER) {
+        var_list[idx].value = (void *) getchar();
+        return;
+    }
+
     buf = malloc(MAXWORD);
     memset(buf, 0, MAXWORD);
 
     getword(stdin, buf, "\n");
 
-    if (type == CHARACTER) {
-        var_list[idx].value = (void *) buf[0];
-    }
-    else if (type == BOOLEAN) {
+    if (type == BOOLEAN) {
         if (!strcmp(buf, "true"))
             var_list[idx].value = (void *) 1;
         else if (!strcmp(buf, "false"))
