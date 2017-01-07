@@ -96,10 +96,10 @@ extern const char  *LOGIC_KEYWORDS[];        /* if, then, etc. */
 extern const char  *ASSIGNMENT_OPERATORS[];  /* assignment operators */
 extern const char  *COMPARISON_OPERATORS[];  /* comparison operators */
 
-extern int last_val;    /* last value computed */
-extern char *last_op;   /* last operator used */
+extern int  last_val;   /* last value computed */
+extern char *last_func; /* last operator used */
 
-extern int breaklevel; /* the RIDICULOUS while loop problem */
+extern int breaklevel;  /* the RIDICULOUS while loop problem */
 
 /* strfunc.c functions */
 extern void push_char(char, char *);
@@ -133,7 +133,7 @@ extern int  set_next_variable(char *);
 extern int  existing_variable(char *);
 extern int  getval(char *);
 extern void create_variable(char *);
-extern void operate(signed int, char *);
+extern void function(signed int, char *);
 
 /* equation.c functions */
 extern int  compute_eq(void);  // eq.compute
@@ -168,7 +168,7 @@ extern void read_loop(FILE *, FILE *);
                              strset(eq.op[eq.idx], v)
 #define strset(s, buf)       memset(s, 0, MAXWORD);       \
                              memcpy(s, buf, strlen(buf))
-#define reset_last_op()      strset(last_op, "blank")
+#define reset_last_func()    strset(last_func, "blank")
 #define remove_quotes(s)     strsnip(s, 0); \
                              strsnip(s, strlen(s)-1)
 
