@@ -6,7 +6,6 @@
 
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
 
-// jump set_next_variable
 int set_next_variable(char *buf)
 {
     if (!strcmp(buf, "var")) {
@@ -36,7 +35,6 @@ int set_next_variable(char *buf)
     return 1;
 }
 
-// jump create_variable
 void create_variable(char *name)
 {
 #ifdef VAR_DEBUG
@@ -68,7 +66,6 @@ void create_variable(char *name)
 #endif
 }
 
-// jump destroy_variable
 void destroy_variable(int idx)
 {
     if ((idx < 0) || (idx >= 100))
@@ -92,7 +89,6 @@ void destroy_variable(int idx)
     variable_count--;
 }
 
-// jump function
 void function(signed int idx, char *val)
 {
     int m = 0;
@@ -125,7 +121,6 @@ void function(signed int idx, char *val)
         destroy_variable(idx);
 }
 
-// jump getval
 /* get value from variable or magic number stored in val */
 int getval(char *val)
 {
@@ -152,7 +147,6 @@ int getval(char *val)
     return 0;
 }
 
-// jump existing_variable
 int existing_variable(char *name)
 {
     int i;

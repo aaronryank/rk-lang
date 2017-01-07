@@ -9,8 +9,6 @@
 enum { UNDEF, LT, GT, LEQ, GEQ, EQ, NEQ, AND, OR };
 /*            <   >   <=   >=   ==  !=   &&   || */
 
-
-// jump reset_logic     reset logic variables
 void reset_logic(void)
 {
     int i;
@@ -23,7 +21,7 @@ void reset_logic(void)
     memset(logic.keyword, 0, MAXWORD);
 }
 
-// jump getop      get operator index from val
+/* get operator index from val */
 int getop(char *val)
 {
     enum {
@@ -78,7 +76,6 @@ void mod_logic_op(int (*op)[], int idx, int order)
     }
 }
 
-// jump compute_logic
 int compute_logic(void)
 {
     int op[100] = {0};
@@ -124,7 +121,6 @@ int compute_logic(void)
     return op[0];
 }
 
-// jump add_logic
 void add_logic(char *buf)
 {
     if ((!strcmp(buf, "then") && !strcmp(logic.keyword, "if")) ||
@@ -147,7 +143,6 @@ void add_logic(char *buf)
     }
 }
 
-// jump set_logic
 void set_logic(char *buf)
 {
     logic.in = 1;

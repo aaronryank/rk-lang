@@ -9,7 +9,6 @@
 enum { NOTHING, MULT, DIV, MOD, PLUS, MINUS, AND, OR, XOR };
 //               x     /    %    +      -     &   |    ^
 
-// jump add_op
 struct eq_keyword add_op(int type, int chrval)
 {
     struct eq_keyword temp;
@@ -20,7 +19,6 @@ struct eq_keyword add_op(int type, int chrval)
     return temp;
 }
 
-// jump assign_eq
 void assign_eq(void)
 {
     /* shorten, since they're used so much */
@@ -92,7 +90,6 @@ void assign_eq(void)
     }
 }
 
-// jump reset_eq
 /* reset eq variables */
 void reset_eq(void)
 {
@@ -103,7 +100,6 @@ void reset_eq(void)
     eq.in = eq.last = eq.idx = 0;
 }
 
-// jump geteq
 int geteq(char *val)
 {
     if (chr_eq(*val, "x/%+-&|^") && (*(val+1) == 0)) {
@@ -151,7 +147,6 @@ void mod_eq_op(int (*op)[], int idx, int order)
     }
 }
 
-// jump compute_eq
 int compute_eq(void)
 {
     int i, j, s, val;
@@ -194,7 +189,6 @@ int compute_eq(void)
     return op[0];
 }
 
-// jump add_eq
 int add_eq(char *buf)
 {
 #ifdef EQ_DEBUG

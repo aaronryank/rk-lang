@@ -9,7 +9,6 @@
 
 char escape_code[100];
 
-// jump rkread
 void rkread(int idx)
 {
     char *buf;
@@ -50,7 +49,6 @@ void rkread(int idx)
     free(buf);
 }
 
-// jump remove_int
 /* remove count integers from arr, starting at index idx */
 void remove_int(int (*arr)[], int idx, int count)
 {
@@ -61,7 +59,6 @@ void remove_int(int (*arr)[], int idx, int count)
             (*arr)[j] = (*arr)[j+1];
 }
 
-// jump rkprint
 void rkprint(int idx)
 {
     int i = 0;
@@ -98,7 +95,6 @@ void rkprint(int idx)
     free(str);
 }
 
-// jump rkputchar
 void rkputchar(char c)
 {
     static volatile int escape = 0;
