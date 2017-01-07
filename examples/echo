@@ -1,0 +1,10 @@
+#!/home/ryan/bin/rk
+
+rk:start
+   key #key
+
+   while 1 do
+      read:  #key
+      print: #key
+   done
+rk:end
