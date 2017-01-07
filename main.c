@@ -88,8 +88,8 @@ int main(int argc, char *argv[])
     read_loop(src, dest);
 
     /* clean up */
-    rk_cleanup();
     main_cleanup();
+    rk_cleanup();
     return -error_count;
 }
 

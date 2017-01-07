@@ -133,7 +133,7 @@ extern int  set_next_variable(char *);
 extern int  existing_variable(char *);
 extern int  getval(char *);
 extern void create_variable(char *);
-extern void operate(int, char *, int);
+extern void operate(signed int, char *);
 
 /* equation.c functions */
 extern int  compute_eq(void);  // eq.compute
