@@ -92,8 +92,8 @@ void destroy_variable(int idx)
     variable_count--;
 }
 
-// jump operate
-void operate(signed int idx, char *val)
+// jump function
+void function(signed int idx, char *val)
 {
     int m = 0;
 
@@ -115,9 +115,9 @@ void operate(signed int idx, char *val)
         strset(var_list[idx].value, val);
     }
 
-    if (!strcmp(last_op, "print:")) {
+    if (!strcmp(last_func, "print:")) {
         rkprint(idx);
-    } else if (!strcmp(last_op, "read:")) {
+    } else if (!strcmp(last_func, "read:")) {
         rkread(idx);
     }
 
