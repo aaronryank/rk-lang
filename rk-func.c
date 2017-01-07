@@ -27,6 +27,11 @@ void rkread(int idx)
     getword(stdin, buf, "\n");
 
     if (type == BOOLEAN) {
+        if (!strcmp(buf,"")) { // common character fallthrough issue
+            rkread(idx);
+            return;
+        }
+
         if (!strcmp(buf, "true"))
             var_list[idx].value = (void *) 1;
         else if (!strcmp(buf, "false"))
