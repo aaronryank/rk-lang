@@ -6,7 +6,6 @@
 
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
 
-// jump add_jump
 void add_jump(FILE *src, char *name)
 {
     int i = jump_count;
@@ -26,7 +25,6 @@ void add_jump(FILE *src, char *name)
     jump_count++;
 }
 
-// jump jump  * oh crap *
 /* I will be using goto statements in this function
    that implements gotos. Deal with it. */
 void jump(FILE *src, char *jump_name)
@@ -41,7 +39,6 @@ end:
     fseek(src, jumps[i].offset, SEEK_SET);
 }
 
-// jump existing_jump
 int existing_jump(char *name)
 {
     int i;

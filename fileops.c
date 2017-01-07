@@ -8,7 +8,6 @@
 
 int breaklevel = 0;
 
-// jump wait_for_character
 void wait_for_character(FILE *f, int delim, int print)
 {
     static int escape = 0;
@@ -20,7 +19,6 @@ void wait_for_character(FILE *f, int delim, int print)
 }
 
 // this is kinda bad but I don't know how to improve it.
-// jump break_from
 void break_from(FILE *f, char *open, char *close)
 {
 #ifdef WHILE_DEBUG
