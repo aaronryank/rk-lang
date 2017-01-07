@@ -50,7 +50,6 @@ void create_variable(char *name)
         return;
     }
 
-    /* shorten, since it's used so much */
     register int i = variable_count;
 
     /* create variable */
@@ -58,14 +57,10 @@ void create_variable(char *name)
     var_list[i].name  = malloc(MAXWORD);
     var_list[i].value = NULL;
 
-    /* assign variable name */
     memset(var_list[i].name, 0, MAXWORD);
     memcpy(var_list[i].name, name, strlen(name));
 
-    /* set last-used variable */
     last.var_idx = i;
-
-    /* increment variable count #uselesscomments */
     variable_count++;
 
 #ifdef VAR_DEBUG
@@ -73,44 +68,61 @@ void create_variable(char *name)
 #endif
 }
 
-// jump operate
-void operate(int idx, char *val, int t)
+// jump destroy_variable
+void destroy_variable(int idx)
 {
-#ifdef OP_DEBUG
-    printf("Operate with last_op being %s and idx being %d\n", last_op, idx);
-#endif
-    struct variable temp;
+    if ((idx < 0) || (idx >= 100))
+        return;
 
-    /* magic number, string literal, etc. */
-    if (t == 1) {
-        idx = 44;
-
-        temp = var_list[idx];
-
-        var_list[idx].type  = UNTYPED;
-        var_list[idx].value = val;
+    if (existing_variable(var_list[idx].name) == -1) {
+        fprintf(stderr, "Error %d: Tried to destroy nonexistent variable at index %d\n", error_count, idx);
+        error_count++;
+        return;
     }
 
-    char *str = malloc(MAXWORD);
+    register int i = variable_count;
 
-    if (!strcmp(last_op, "--")) {
-        var_list[idx].value = ((void *) ((int) var_list[idx].value - 1));
-    } else if (!strcmp(last_op, "++")) {
-        var_list[idx].value = ((void *) ((int) var_list[idx].value + 1));
-    } else if (!strcmp(last_op, "print:")) {
+    /* destroy variable */
+    var_list[i].type = 0;
+    free(var_list[i].name);
+
+    if ((var_list[i].type == STRING) && (var_list[i].value != NULL))
+        free(var_list[i].value);
+
+    variable_count--;
+}
+
+// jump operate
+void operate(signed int idx, char *val)
+{
+    int m = 0;
+
+    /* magic number, string literal, etc. */
+    if (idx == -1) {
+        int t_type = next.type;
+        int t_vartype = next.var_type;
+
+        set_next_variable("str");
+        create_variable("TempVar");
+
+        next.type = t_type;
+        next.var_type = t_vartype;
+
+        m = 1;
+        idx = last.var_idx;
+
+        var_list[idx].value = malloc(MAXWORD);
+        strset(var_list[idx].value, val);
+    }
+
+    if (!strcmp(last_op, "print:")) {
         rkprint(idx);
     } else if (!strcmp(last_op, "read:")) {
         rkread(idx);
     }
 
-    if (t == 1)
-        var_list[idx] = temp;
-
-#if RESET_LAST_OP == 1
-    memcpy(last_op, "blank", 5);
-#endif
-
-    free(str);
+    if (m)
+        destroy_variable(idx);
 }
 
 // jump getval

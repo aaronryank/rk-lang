@@ -124,13 +124,13 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
     /* string literals */
     else if ((buf[0] == '\"') && (buf[strlen(buf)-1] == '\"')) {
         remove_quotes(buf);
-        operate(44, buf, 1);
+        operate(-1, buf);
     }
 
     /* operators that require no right-hand value */
     else if (!strcmp(buf, "--") || !strcmp(buf, "++")) {
         strset(last_op, buf);
-        operate(last.var_idx, 0, 0);
+        operate(last.var_idx, 0);
     }
 
     /* functions */
@@ -159,7 +159,7 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
     else if ((i = existing_variable(buf)) != -1) {
         last.var_idx = i;
         if (strcmp(last_op, "blank"))
-            operate(i, 0, 0);
+            operate(i, 0);
     }
 
     /* nonexistent variable */
