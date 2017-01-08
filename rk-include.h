@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #pragma GCC diagnostic ignored "-Wunused-variable"
 
@@ -20,15 +22,16 @@ struct {
     int var_idx;   /* variable index in var_list[] */
 } last;
 
-/* logic sequence */
+/* logic/equation sequence */
 struct {
     int in;
     int idx;
+    int last;
     char *keyword;
     char *op[100];
-    int (*compute)(void);
-    void (*reset)(void), (*add)(char *), (*set)(char *);
-} logic;
+    int (*compute)(void), (*add)(char *);
+    void (*assign)(void), (*reset)(void), (*set)(char *), (*logic)(void);
+} compute;
 
 /* unrecognized keyword types */
 enum {
@@ -46,22 +49,6 @@ enum {
     BOOLEAN,
     BINARY
 } variable_types;
-
-/* mathematical equals operation */
-struct eq_keyword {
-    int type;
-    int val;
-};
-
-struct {
-    int in;
-    int idx;
-    int last;
-    char *assignment;
-    char *op[100];
-    int (*compute)(void), (*add)(char *);
-    void (*assign)(void), (*reset)(void), (*set)(char *);
-} eq;
 
 /* types in an equals-operation */
 enum {
@@ -100,6 +87,17 @@ extern int  last_val;   /* last value computed */
 extern char *last_func; /* last operator used */
 
 extern int breaklevel;  /* the RIDICULOUS while loop problem */
+
+/* compute.c functions */
+extern int  getcmp(char *);
+extern void mod_op(int (*)[], int, int);
+extern int  compute_compute(void);
+extern int  compute_breakout(char *);
+extern int  compute_add(char *);
+extern void compute_set(char *);
+extern void compute_assign(void);
+extern void compute_logic(void);
+extern void compute_reset(void);
 
 /* strfunc.c functions */
 extern void push_char(char, char *);
@@ -143,7 +141,7 @@ extern void reset_eq(void);    // eq.reset
 extern void set_eq(char *);    // eq.set
 
 /* logic.c functions */
-extern int  compute_logic(void);  // logic.compute
+//extern int  compute_logic(void);  // logic.compute
 extern void reset_logic(void);    // logic.reset
 extern void add_logic(char *);    // logic.add
 extern void set_logic(char *);    // logic.set

@@ -26,23 +26,34 @@ void rk_init(void)
     /* initialize while list */
     memset(loop_jump, 0L, sizeof(loop_jump));
 
+    /* initialize compute */
+    memset(compute.op, 0, sizeof(compute.op));
+    compute.compute = compute_compute;
+    compute.assign  = compute_assign;
+    compute.reset   = compute_reset;
+    compute.add     = compute_add;
+    compute.set     = compute_set;
+    compute.logic   = compute_logic;
+    compute.idx     = compute.in = 0;
+    compute.keyword = malloc(MAXWORD);
+
     /* initialize eq op */
-    eq.compute    = compute_eq;
-    eq.assign     = assign_eq;
-    eq.reset      = reset_eq;
-    eq.add        = add_eq;
-    eq.set        = set_eq;
-    eq.idx        = eq.in = eq.last = 0;
-    eq.assignment = malloc(MAXWORD);
+    //eq.compute    = compute_eq;
+    //eq.assign     = assign_eq;
+    //eq.reset      = reset_eq;
+    //eq.add        = add_eq;
+    //eq.set        = set_eq;
+    //eq.idx        = eq.in = eq.last = 0;
+    //eq.assignment = malloc(MAXWORD);
 
     /* initialize logic */
-    memset(logic.op, 0, sizeof(logic.op));
-    logic.compute = compute_logic;
-    logic.reset   = reset_logic;
-    logic.add     = add_logic;
-    logic.set     = set_logic;
-    logic.in      = logic.idx = 0;
-    logic.keyword = malloc(MAXWORD);
+    //memset(logic.op, 0, sizeof(logic.op));
+    //logic.compute = compute_logic;
+    //logic.reset   = reset_logic;
+    //logic.add     = add_logic;
+    //logic.set     = set_logic;
+    //logic.in      = logic.idx = 0;
+    //logic.keyword = malloc(MAXWORD);
 }
 
 void rk_cleanup(void)
@@ -50,8 +61,9 @@ void rk_cleanup(void)
     int i;
 
     free(last_func);
-    free(eq.assignment);
-    free(logic.keyword);
+    //free(eq.assignment);
+    //free(logic.keyword);
+    free(compute.keyword);
 
     for (i = 0; i < variable_count; i++) {
         free(var_list[i].name);
@@ -89,6 +101,10 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
     printf("---PARSING  \e[32m%s\e[0m---\n", buf);
 #endif
 
+#ifdef DEBUG_STEP
+    usleep(100000);
+#endif
+
     /* end of code */
     if (!strcmp(buf, "rk:end")) {
         wait_for_character(src, -1, 0);
@@ -99,27 +115,36 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
         reset_last_func();
     }
 
-    /* assignment operator, triggers eq equation */
-    else if (is_assignment_operator(buf) && (eq.in == 0)) {
-        eq.set(buf);
-        reset_last_func();
-    }
-
-    /* logic keyword, triggers logic evaluation */
-    else if (is_logic_keyword(buf) && (logic.in == 0)) {
-        logic.set(buf);
-        reset_last_func();
-    }
-
-    /* add buf to logic */
-    else if (logic.in == 1) {
-        logic.add(buf);
-    }
-
-    /* add buf to equation */
-    else if ((eq.in == 1) && !eq.add(buf)) {
+    else if ((compute.in == 1) && compute.add(buf)) {
         dummy();
     }
+
+    else if ((is_assignment_operator(buf) || is_logic_keyword(buf)) && (compute.in == 0)) {
+        compute.set(buf);
+        reset_last_func();
+    }
+
+    /* assignment operator, triggers eq equation */
+    //else if (is_assignment_operator(buf) && (eq.in == 0)) {
+    //    eq.set(buf);
+    //    reset_last_func();
+    //}
+
+    /* logic keyword, triggers logic evaluation */
+    //else if (is_logic_keyword(buf) && (logic.in == 0)) {
+    //    logic.set(buf);
+    //    reset_last_func();
+   // }
+
+    /* add buf to logic */
+    //else if (logic.in == 1) {
+    //    logic.add(buf);
+    //}
+
+    /* add buf to equation */
+    //else if ((eq.in == 1) && !eq.add(buf)) {
+    //    dummy();
+    //}
 
     /* string literals */
     else if ((buf[0] == '\"') && (buf[strlen(buf)-1] == '\"')) {
@@ -134,6 +159,7 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
 
     /* repeat the loop */
     else if (!strcmp(buf, "done")) {
+        reset_last_func();
         fseek(src, loop_jump[loop_count-1], SEEK_SET);
     }
 
@@ -145,7 +171,7 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
 
     /* jump (goto) declaration */
     else if (is_jump_keyword(buf)) {
-        strset(last_func, "blank");
+        reset_last_func();
         add_jump(src, buf);
     }
 

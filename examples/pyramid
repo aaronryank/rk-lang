@@ -1,4 +1,4 @@
-#!/home/ryan/bin/rk
+#!../rk
 rk:start
 
    int i = 0 j = 0 max
