@@ -11,9 +11,8 @@ const char *VARTYPE[] = {
 
 const char *RESERVED[] = {
     "var", "int", "key", "str", "bool", "bin",
-    "for", "in", "if", "then", "fi", "while",
+    "for", "in", "if", "then", "fi", "while", "do", "done",
     "poo-nuggets", /* o_O */
-    ":done"
 };
 
 const char *LOGIC_KEYWORDS[] = {"for", "if", "while"};

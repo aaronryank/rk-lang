@@ -175,6 +175,11 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
         add_jump(src, buf);
     }
 
+    /* stop creation of 'fi' and 'done' variables */
+    else if (is_reserved_keyword(buf)) {
+        dummy();
+    }
+
     /* existing variable */
     else if ((i = existing_variable(buf)) != -1) {
         last.var_idx = i;
