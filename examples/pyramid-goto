@@ -1,4 +1,4 @@
-#!/home/ryan/bin/rk
+#!../rk
 rk:start
 
    int max
@@ -27,7 +27,7 @@ rk:start
    print: chr
    int j += 1
 
-   if j < i then
+   if j <= i then
       inner
    fi
 

@@ -1,4 +1,4 @@
-#!/home/ryan/bin/rk
+#!../rk
 
 rk:start
    key #key

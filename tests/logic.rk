@@ -9,4 +9,6 @@ rk:start
    fi if test != 2 then
       print: test "^n"
    fi
+
+   print: "Finished.^n"
 rk:end
