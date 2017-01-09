@@ -1,0 +1,29 @@
+#!../rk
+rk:start
+   key test
+
+   test = 'a'
+
+   while test <= 'z' do
+      print: test
+      var test = test + 1
+   done
+
+   test = 'A'
+   print: "^n"
+
+   while test <= 'Z' do
+      print: test
+      var test = test + 1
+   done
+
+   test = '0'
+   print: "^n"
+
+   while test <= '9' do
+      print: test
+      var test = test + 1
+   done
+
+   print: "^n"
+rk:end

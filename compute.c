@@ -7,7 +7,7 @@
 #define is_logical_complement(s) ((!strcmp(s, "then") && !strcmp(compute.keyword, "then")) || \
                                  (!strcmp(s, "do") && !strcmp(compute.keyword, "while")))
 
-enum { UNDEF, LT, GT, LEQ, GEQ, EQ, NEQ, L_AND, L_OR, MULT, DIV, MOD, PLUS, MINUS, AND, OR, XOR } eq_types;
+enum { UNDEF, LT, GT, LEQ, GEQ, EQ, NEQ, L_AND, L_OR, MULT, DIV, MOD, PLUS, MINUS, B_AND, B_OR, XOR } eq_types;
 
 void compute_set(char *keyword)
 {
@@ -67,13 +67,13 @@ int compute_compute(void)
         for (i = 1; i <= 3; i++) {
             for (j = 1; j <= s; j += 2) {
                 if (((type == 1) &&
-                    ((in_range(op[j], MULT, MOD) && (i == 1))   ||
-                     (in_range(op[j], PLUS, MINUS) && (i == 2)) ||
-                     (in_range(op[j], AND, XOR) && (i == 3)))) ||
+                    ((in_range(op[j], MULT, MOD) && (i == 1))    ||
+                     (in_range(op[j], PLUS, MINUS) && (i == 2))  ||
+                     (in_range(op[j], B_AND, XOR) && (i == 3)))) ||
                     ((type == 2) &&
                     ((in_range(op[j], LT, GEQ) && (i == 1)) ||
                      (in_range(op[j], EQ, NEQ) && (i == 2)) ||
-                    (in_range(op[j], AND, OR) && (i == 3))))) {
+                    (in_range(op[j], L_AND, L_OR) && (i == 3))))) {
 
                     mod_op(&op, j, i);
                     remove_int(&op, j, 2);
@@ -224,8 +224,8 @@ int getcmp(char *val)
           case '%': return MOD;
           case '+': return PLUS;
           case '-': return MINUS;
-          case '&': return AND;
-          case '|': return OR;
+          case '&': return B_AND;
+          case '|': return B_OR;
           case '^': return XOR;
           case '>': return GT;
           case '<': return LT;
@@ -290,9 +290,9 @@ void mod_op(int (*op)[], int idx, int order)
 
     else if (order == 3) {
         /* equation */
-        if (cur == AND)
+        if (cur == B_AND)
             pre &= post;
-        else if (cur == OR)
+        else if (cur == B_OR)
             pre |= post;
         else if (cur == XOR)
             pre ^= post;
