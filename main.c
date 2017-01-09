@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
         strcpy(dest_fname, "rk.out");
     }
     if (!src) {
-        if (access(src_fname, R_OK)) {
+        if (strcmp(src_fname, "") && access(src_fname, R_OK)) {
             int errbackup = errno;
             fprintf(stderr, "Defaulting input to stdin - could not open input file '%s': %s\n", src_fname, strerror(errbackup));
             errno = errbackup;
