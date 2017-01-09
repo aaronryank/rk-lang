@@ -217,8 +217,6 @@ void compute_reset(void)
 
 int getcmp(char *val)
 {
-    const char *single[] = {"x", "/", "%", "+", "-", "&", "|", "^", "<", ">"};
-
     if (chr_eq(*val, "x/%+-&|^<>") && (*(val+1) == 0)) {
         switch (*val) {
           case 'x': return MULT;
