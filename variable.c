@@ -43,7 +43,7 @@ void create_variable(char *name)
 
     /* check if there are too many variables */
     if (variable_count >= 100) {
-        fprintf(stderr, "Error %d: could not create variable %s: Variable limit (100) exceeded\n", error_count, name);
+        error(0, "Could not create variable %s: Variable limit (100) exceeded\n", name);
         error_count++;
         return;
     }
@@ -72,7 +72,7 @@ void destroy_variable(int idx)
         return;
 
     if (existing_variable(var_list[idx].name) == -1) {
-        fprintf(stderr, "Error %d: Tried to destroy nonexistent variable at index %d\n", error_count, idx);
+        error(0, "Tried to destroy nonexistent variable at index %d\n", idx);
         error_count++;
         return;
     }
@@ -132,7 +132,7 @@ int getval(char *val)
         if ((var_list[i].type == INTEGER) || (var_list[i].type == BOOLEAN) || (var_list[i].type == CHARACTER)) {
             return (int) var_list[i].value;
         } else {
-            fprintf(stderr, "Invalid type for variable %s: Expected integer, boolean or character\n", var_list[i].name);
+            error(0, "Invalid type for variable %s: Expected integer, boolean or character\n", var_list[i].name);
             return 0;
         }
     }
@@ -143,7 +143,7 @@ int getval(char *val)
         return atoi(val);
     }
 
-    fprintf(stderr, "Error: Unrecognized value %s\n", val);
+    error(0, "Unrecognized value %s\n", val);
     return 0;
 }
 
@@ -156,4 +156,17 @@ int existing_variable(char *name)
             return i;
 
     return -1;
+}
+
+int is_string(char *word)
+{
+    if ((word[0] == '"') && (word[strlen(word)-1] == '"'))
+        return 1;
+
+    int i = existing_variable(word);
+
+    if ((i != -1) && (var_list[i].type == STRING))
+        return 1;
+
+    return 0;
 }

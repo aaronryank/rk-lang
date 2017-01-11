@@ -23,7 +23,7 @@ int last_arg;
 
 void parse(char *);
 void set_file(char *);
-void catch_exit(int);
+void clean_exit(int);
 void main_cleanup(void);
 
 int main(int argc, char *argv[])
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     if (!src) {
         if (strcmp(src_fname, "") && access(src_fname, R_OK)) {
             int errbackup = errno;
-            fprintf(stderr, "Defaulting input to stdin - could not open input file '%s': %s\n", src_fname, strerror(errbackup));
+            printf("Defaulting input to stdin - could not open input file '%s': %s\n", src_fname, strerror(errbackup));
             errno = errbackup;
         }
 
@@ -69,17 +69,17 @@ int main(int argc, char *argv[])
 #endif
 
     /* catch exit signals */
-    if (signal(SIGINT, catch_exit) == SIG_ERR)
-        fprintf(stderr, "Error: Can't catch SIGINT\n");
+    if (signal(SIGINT, clean_exit) == SIG_ERR)
+        error(0, "Can't catch SIGINT\n");
 
-    if (signal(SIGTERM, catch_exit) == SIG_ERR)
-        fprintf(stderr, "Error: Can't catch SIGTERM\n");
+    if (signal(SIGTERM, clean_exit) == SIG_ERR)
+        error(0, "Can't catch SIGTERM\n");
 
-    if (signal(SIGTSTP, catch_exit) == SIG_ERR)
-        fprintf(stderr, "Error: Can't catch SIGTSTP\n");
+    if (signal(SIGTSTP, clean_exit) == SIG_ERR)
+        error(0, "Error: Can't catch SIGTSTP\n");
 
-    if (signal(SIGQUIT, catch_exit) == SIG_ERR)
-        fprintf(stderr, "Error: Can't catch SIGQUIT\n");
+    if (signal(SIGQUIT, clean_exit) == SIG_ERR)
+        error(0, "Error: Can't catch SIGQUIT\n");
 
     /* setup variables */
     rk_init();
@@ -135,9 +135,9 @@ void main_cleanup(void)
     fclose(dest);
 }
 
-void catch_exit(int sig)
+void clean_exit(int sig)
 {
     printf("Caught signal %d, exiting cleanly.\n", sig);
     main_cleanup();
-    exit(EXIT_SUCCESS);
+    exit(EXIT_FAILURE);
 }

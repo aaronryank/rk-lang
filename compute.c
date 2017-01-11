@@ -24,7 +24,7 @@ void compute_set(char *keyword)
 
 int compute_breakout(char *keyword)
 {
-    if (is_equation_operator(keyword) || is_logical_operator(keyword)) {
+    if (is_special_operator(keyword) || is_equation_operator(keyword) || is_logical_operator(keyword)) {
         if (compute.last == OPERATOR) {
             return 1;
         } else {
@@ -45,13 +45,80 @@ int compute_breakout(char *keyword)
     return 0;
 }
 
+void compute_remove(int idx, int count)
+{
+#ifdef STR_DEBUG
+    printf("Removing %d members at index %d\n", count, idx);
+#endif
+    int i, j;
+
+    for (i = 1; i <= count; i++) {
+        for (j = idx; compute.op[j]; j++)
+            compute.op[j] = compute.op[j+1];
+    }
+
+    compute.idx -= count;
+}
+
+void compute_strmanip(int (*arr)[], int idx)
+{
+    if (!is_string(compute.op[idx-1])) {
+        error(0, "Value %s not string literal nor stringly typed variable name\n", compute.op[idx-1]);
+        error_count++;
+        return;
+    }
+
+    int var = existing_variable(compute.op[idx-1]);
+    int pos = getval(compute.op[idx+1]);
+    int val;
+
+    if (var == -1)
+        val = (char) (compute.op[idx-1])[pos+1];
+    else
+        val = (char) ((char *) var_list[var].value)[pos];
+
+    /* assign string */
+    memset(compute.op[idx-1], 0, MAXWORD);
+    (compute.op[idx-1])[0] = '\'';
+    (compute.op[idx-1])[1] = val;
+    (compute.op[idx-1])[2] = '\'';
+
+    compute.remove(idx, 2);
+}
+
 // oops. #badnamingconventions
 int compute_compute(void)
 {
-    int i, j, s, val, type;
+    int i, range, s, val, type;
     int op[100] = {0};
 
     s = compute.idx;
+
+#ifdef STR_DEBUG
+    printf("Before precheck: {");
+    for (i = 0; i < s; i++)
+        printf("%s ", compute.op[i]);
+    printf("\b}\n");
+#endif
+
+    /* precheck */
+    for (i = 1; i < s; i += 2) {
+        if (!strcmp(compute.op[i], ".")) {
+            compute.strmanip(&op, i);
+            remove_int(&op, i, 2);
+            s -= 2;
+            i -= 2;
+        }
+    }
+
+    s = compute.idx;
+
+#ifdef STR_DEBUG
+    printf("After precheck: {");
+    for (i = 0; i < s; i++)
+        printf("%s ", compute.op[i]);
+    printf("\b}\n");
+#endif
 
     for (i = 0; i < s; i++)
         op[i] = getcmp(compute.op[i]);
@@ -64,21 +131,21 @@ int compute_compute(void)
 #endif
 
     for (type = 1; type <= 2; type++) {
-        for (i = 1; i <= 3; i++) {
-            for (j = 1; j <= s; j += 2) {
+        for (range = 1; range <= 3; range++) {
+            for (i = 1; i <= s; i += 2) {
                 if (((type == 1) &&
-                    ((in_range(op[j], MULT, MOD) && (i == 1))    ||
-                     (in_range(op[j], PLUS, MINUS) && (i == 2))  ||
-                     (in_range(op[j], B_AND, XOR) && (i == 3)))) ||
-                    ((type == 2) &&
-                    ((in_range(op[j], LT, GEQ) && (i == 1)) ||
-                     (in_range(op[j], EQ, NEQ) && (i == 2)) ||
-                    (in_range(op[j], L_AND, L_OR) && (i == 3))))) {
-
-                    mod_op(&op, j, i);
-                    remove_int(&op, j, 2);
+                  ((in_range(op[i], MULT, MOD) && (range == 1))    ||
+                   (in_range(op[i], PLUS, MINUS) && (range == 2))  ||
+                   (in_range(op[i], B_AND, XOR) && (range == 3)))) ||
+                  ((type == 2) &&
+                  ((in_range(op[i], LT, GEQ) && (range == 1)) ||
+                   (in_range(op[i], EQ, NEQ) && (range == 2)) ||
+                   (in_range(op[i], L_AND, L_OR) && (range == 3))))) {
+  
+                    mod_op(&op, i, range);
+                    remove_int(&op, i, 2);
                     s -= 2;
-                    j -= 2;
+                    i -= 2;
                 }
             }
         }
@@ -173,7 +240,7 @@ void compute_assign(void)
     else if (t == STRING)
     {
         if (compute.idx > 1) {
-            fprintf(stderr, "Error: Too many arguments to string '%s' assignment\n", var_list[i].name);
+            error(0, "Too many arguments to string '%s' assignment\n", var_list[i].name);
             return;
         }
 
@@ -189,10 +256,10 @@ void compute_assign(void)
             if (var_list[idx].type == STRING) {
                 strset(val, var_list[idx].value);
             } else {
-                fprintf(stderr, "Error assigning string %s to non-string %p\n", val, var_list[idx].value);
+                error(0, "Attempting to assing string %s to non-string %p\n", val, var_list[idx].value);
             }
         } else {
-            fprintf(stderr, "Error: variable/string %s not found\n", val);
+            error(0, "variable/string %s not found\n", val);
         }
 
         var_list[i].value = malloc(MAXWORD);
@@ -248,13 +315,13 @@ int getcmp(char *val)
     }
 }
 
-void mod_op(int (*op)[], int idx, int order)
+void mod_op(int (*op)[], int idx, int range)
 {
     int pre        = (*op)[idx-1];
     const int cur  = (*op)[idx];
     const int post = (*op)[idx+1];
 
-    if (order == 1) {
+    if (range == 1) {
         /* equation */
         if (cur == MULT)
             pre *= post;
@@ -274,7 +341,7 @@ void mod_op(int (*op)[], int idx, int order)
             pre = (pre >= post);
     }
 
-    else if (order == 2) {
+    else if (range == 2) {
         /* equation */
         if (cur == PLUS)
             pre += post;
@@ -288,7 +355,7 @@ void mod_op(int (*op)[], int idx, int order)
             pre = (pre != post);
     }
 
-    else if (order == 3) {
+    else if (range == 3) {
         /* equation */
         if (cur == B_AND)
             pre &= post;
