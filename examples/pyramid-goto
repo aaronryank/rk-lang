@@ -8,7 +8,7 @@ rk:start
    print: "Enter size: "
    read: max
 
-   if max > 50 then
+   if max > 210 then
       print: "Too large!^n"
       rk:end
    fi if max < 2 then

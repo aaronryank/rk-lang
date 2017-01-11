@@ -1,14 +1,6 @@
 #include "rk-include.h"
 #include <stdio.h>
 
-#define is_equation_operator(s) (chr_eq(*s, "+-x/&%^") && (*(s+1) == '\0'))
-#define is_logical_operator(s)  (str_eq(s, COMPARISON_OPERATORS))
-
-#define is_logical_complement(s) ((!strcmp(s, "then") && !strcmp(compute.keyword, "then")) || \
-                                 (!strcmp(s, "do") && !strcmp(compute.keyword, "while")))
-
-#define operator(s) (is_special_operator(s) || is_equation_operator(s) || is_logical_operator(s))
-
 enum { UNDEF, LT, GT, LEQ, GEQ, EQ, NEQ, L_AND, L_OR, MULT, DIV, MOD, PLUS, MINUS, B_AND, B_OR, XOR } eq_types;
 
 void compute_set(char *keyword)
@@ -16,12 +8,9 @@ void compute_set(char *keyword)
     compute.in = 1;
     strset(compute.keyword, keyword);
 
-    if (!strcmp(keyword, "while")) {
-        if (loop_jump[loop_count-1] != (ftell(src) - 6)) {
-            loop_jump[loop_count] = ftell(src) - 6;
-            loop_count++;
-        }
-    }
+    if (!strcmp(keyword, "while"))
+        if (loop_jump[loop_count-1] != getwhilepos())
+            add_loop();
 }
 
 int compute_breakout(char *keyword)
@@ -29,7 +18,7 @@ int compute_breakout(char *keyword)
     if (is_unary_operator(keyword)) {
         return 0;
     }
-    else if (is_special_operator(keyword) || is_equation_operator(keyword) || is_logical_operator(keyword)) {
+    else if (is_operator(keyword)) {
         if (compute.last == OPERATOR) {
             return 1;
         } else {
@@ -54,9 +43,6 @@ int compute_breakout(char *keyword)
 
 void compute_remove(int idx, int count)
 {
-#ifdef STR_DEBUG
-    printf("Removing %d members at index %d\n", count, idx);
-#endif
     int i, j;
 
     for (i = 1; i <= count; i++) {
@@ -118,11 +104,9 @@ int compute_compute(void)
     int i, range, s, val, type;
     int op[100] = {0};
 
-    s = compute.idx;
-
 #ifdef STR_DEBUG
     printf("Before precheck: {");
-    for (i = 0; i < s; i++)
+    for (i = 0; i < compute.idx; i++)
         printf("%s ", compute.op[i]);
     printf("\b}\n");
 #endif
