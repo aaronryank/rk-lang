@@ -179,5 +179,12 @@ extern void read_loop(FILE *, FILE *);
 #define is_jump_keyword(s)        ((strindex(s, "-") == ((signed int) strlen(s)-1)) && (s[0] != '-'))
 #define is_function_keyword(s)    (strindex(s, ":") == ((signed int) strlen(s)-1))
 #define is_unary_operator(s)      (!strcmp(s, "++") || !strcmp(s, "--"))
+#define is_equation_operator(s)   (chr_eq(*s, "+-x/&%^") && (*(s+1) == '\0'))
+#define is_logical_operator(s)    (str_eq(s, COMPARISON_OPERATORS))
+#define is_operator(s)            (is_special_operator(s) || is_equation_operator(s) || is_logical_operator(s))
+#define is_logical_complement(s)  ((!strcmp(s, "then") && !strcmp(compute.keyword, "then")) || (!strcmp(s, "do") && !strcmp(compute.keyword, "while")))
+
+#define getwhilepos()  (ftell(src) - 6)
+#define add_loop()     loop_jump[loop_count++] = getwhilepos()
 
 #define dummy() // for empty if-else bodies
