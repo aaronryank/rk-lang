@@ -7,6 +7,8 @@
 #define is_logical_complement(s) ((!strcmp(s, "then") && !strcmp(compute.keyword, "then")) || \
                                  (!strcmp(s, "do") && !strcmp(compute.keyword, "while")))
 
+#define operator(s) (is_special_operator(s) || is_equation_operator(s) || is_logical_operator(s))
+
 enum { UNDEF, LT, GT, LEQ, GEQ, EQ, NEQ, L_AND, L_OR, MULT, DIV, MOD, PLUS, MINUS, B_AND, B_OR, XOR } eq_types;
 
 void compute_set(char *keyword)
@@ -24,14 +26,19 @@ void compute_set(char *keyword)
 
 int compute_breakout(char *keyword)
 {
-    if (is_special_operator(keyword) || is_equation_operator(keyword) || is_logical_operator(keyword)) {
+    if (is_unary_operator(keyword)) {
+        return 0;
+    }
+    else if (is_special_operator(keyword) || is_equation_operator(keyword) || is_logical_operator(keyword)) {
         if (compute.last == OPERATOR) {
             return 1;
         } else {
             compute.last = OPERATOR;
         }
     }
-    else if (is_reserved_keyword(keyword) || is_function_keyword(keyword) || is_logical_complement(keyword)) {
+    else if (is_reserved_keyword(keyword)   ||
+             is_function_keyword(keyword)   ||
+             is_logical_complement(keyword)) {
         return 1;
     }
     else {
@@ -60,7 +67,7 @@ void compute_remove(int idx, int count)
     compute.idx -= count;
 }
 
-void compute_strmanip(int (*arr)[], int idx)
+void compute_strmanip(int idx)
 {
     if (!is_string(compute.op[idx-1])) {
         error(0, "Value %s not string literal nor stringly typed variable name\n", compute.op[idx-1]);
@@ -79,11 +86,30 @@ void compute_strmanip(int (*arr)[], int idx)
 
     /* assign string */
     memset(compute.op[idx-1], 0, MAXWORD);
-    (compute.op[idx-1])[0] = '\'';
-    (compute.op[idx-1])[1] = val;
-    (compute.op[idx-1])[2] = '\'';
+    sprintf(compute.op[idx-1], "'%c'", val);
 
     compute.remove(idx, 2);
+}
+
+void compute_unary_operate(int idx)
+{
+    int var_idx;
+
+    if (existing_variable(compute.op[idx-1]) != -1) {
+        var_idx = idx-1;
+    } else if (existing_variable(compute.op[idx+1]) != -1) {
+        var_idx = idx+1;
+    } else {
+        error(0, "Invalid operation sequence - %s %s %s\n", compute.op[idx-1], compute.op[idx], compute.op[idx+1]);
+    }
+
+    unary_operate(var_idx, *(compute.op[idx]));
+
+    int val = getval(compute.op[var_idx]);
+
+    itoa(val, compute.op[var_idx]);
+
+    compute.remove(idx, 1);
 }
 
 // oops. #badnamingconventions
@@ -101,13 +127,17 @@ int compute_compute(void)
     printf("\b}\n");
 #endif
 
-    /* precheck */
-    for (i = 1; i < s; i += 2) {
-        if (!strcmp(compute.op[i], ".")) {
-            compute.strmanip(&op, i);
-            remove_int(&op, i, 2);
-            s -= 2;
-            i -= 2;
+    /* precheck ++ -- . */
+    for (range = 1; range <= 2; range++) {
+        for (i = 1; i < compute.idx; i += range) {
+            if (is_unary_operator(compute.op[i]) && (range == 1)) {
+                compute.unary_operate(i);
+                i -= 2;
+            }
+            else if (!strcmp(compute.op[i], ".") && (range == 2)) {
+                compute.strmanip(i);
+                i -= 2;
+            }
         }
     }
 

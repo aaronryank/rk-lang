@@ -1,0 +1,21 @@
+rk:start
+   int i
+
+   print: "Original: " i "^n"
+
+   int i ++
+
+   print: "After increment: " i "^n"
+
+   int i --
+
+   print: "After decrement: " i "^n"
+
+   int i --
+
+   print: "After decrement: " i "^n"
+
+   int test = i --
+
+   print: "Decrement in equation: " test i "^n"
+rk:end

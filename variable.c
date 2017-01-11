@@ -139,7 +139,7 @@ int getval(char *val)
     else if ((val[0] == '\'') && (val[2] == '\'')) {
         return val[1];
     }
-    else if (isdigit(*val)) {
+    else if (isdigit(*val) || ((*val == '-') && isdigit(*(val+1)))) {
         return atoi(val);
     }
 
@@ -169,4 +169,13 @@ int is_string(char *word)
         return 1;
 
     return 0;
+}
+
+void unary_operate(int idx, char cr)
+{
+    switch (cr) {
+      case '+': var_list[idx].value = (void *) (((int) var_list[idx].value) + 1); break;
+      case '-': var_list[idx].value = (void *) (((int) var_list[idx].value) - 1); break;
+      default:  error(0, "Operator %c%c not increment or decrement operator\n", cr, cr);
+    }
 }
