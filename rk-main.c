@@ -28,6 +28,7 @@ void rk_init(void)
 
     /* initialize compute */
     memset(compute.op, 0, sizeof(compute.op));
+    compute.unary_operate = compute_unary_operate;
     compute.compute  = compute_compute;
     compute.assign   = compute_assign;
     compute.reset    = compute_reset;
@@ -133,6 +134,11 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
     else if (is_jump_keyword(buf)) {
         reset_last_func();
         add_jump(src, buf);
+    }
+
+    /* unary operators */
+    else if (is_unary_operator(buf)) {
+        unary_operate(last.var_idx, *buf);
     }
 
     /* stop creation of 'fi' and 'done' variables */

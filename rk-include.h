@@ -30,7 +30,7 @@ struct {
     char *keyword;
     char *op[100];
     int (*compute)(void), (*add)(char *);
-    void (*assign)(void), (*reset)(void), (*set)(char *), (*logic)(void), (*strmanip)(int (*)[], int), (*remove)(int, int);
+    void (*assign)(void), (*reset)(void), (*set)(char *), (*logic)(void), (*strmanip)(int), (*remove)(int, int), (*unary_operate)(int);
 } compute;
 
 /* unrecognized keyword types */
@@ -99,8 +99,9 @@ extern void compute_set(char *);
 extern void compute_assign(void);
 extern void compute_logic(void);
 extern void compute_reset(void);
-extern void compute_strmanip(int (*)[], int);
+extern void compute_strmanip(int);
 extern void compute_remove(int, int);
+extern void compute_unary_operate(int);
 
 /* error.c functions */
 extern void error(int, char *, ...);
@@ -142,6 +143,7 @@ extern int  getval(char *);
 extern int  is_string(char *);
 extern void create_variable(char *);
 extern void function(signed int, char *);
+extern void unary_operate(int, char);
 
 /* rk-main.c functions */
 extern void rk_init(void);
@@ -174,7 +176,8 @@ extern void read_loop(FILE *, FILE *);
 #define is_logic_keyword(s)       str_eq(s, LOGIC_KEYWORDS)
 #define is_assignment_operator(s) str_eq(s, ASSIGNMENT_OPERATORS)
 #define is_special_operator(s)    str_eq(s, SPECIAL_OPERATORS)
-#define is_jump_keyword(s)        (strindex(s, "-") == ((signed int) strlen(s)-1))
+#define is_jump_keyword(s)        ((strindex(s, "-") == ((signed int) strlen(s)-1)) && (s[0] != '-'))
 #define is_function_keyword(s)    (strindex(s, ":") == ((signed int) strlen(s)-1))
+#define is_unary_operator(s)      (!strcmp(s, "++") || !strcmp(s, "--"))
 
 #define dummy() // for empty if-else bodies
