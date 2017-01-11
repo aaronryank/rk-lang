@@ -17,7 +17,7 @@ CFLAGS = -g -Wall
 	$(CC) $(CFLAGS) $< -o $@ -lgcc
 
 #-----File Dependencies----------------------
-SRC = const.c compute.c fileops.c jump.c main.c readfile.c rk-func.c rk-main.c strfunc.c variable.c
+SRC = const.c compute.c error.c fileops.c jump.c main.c readfile.c rk-func.c rk-main.c strfunc.c variable.c
 
 OBJ = $(addsuffix .o, $(basename $(SRC)))
 

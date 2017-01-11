@@ -1,0 +1,17 @@
+rk:start
+   key keytest
+
+   int idx = 0 sz = 0
+   str strtest = "foobar"
+
+   * this will be better once I add support for statements like "str . 0 == 'f'"...
+   int sz = 6
+
+   while idx < sz do
+      keytest = strtest . idx
+      idx += 1
+      print: keytest
+   done
+
+   print: "^n"
+rk:end

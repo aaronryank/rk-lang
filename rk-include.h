@@ -30,7 +30,7 @@ struct {
     char *keyword;
     char *op[100];
     int (*compute)(void), (*add)(char *);
-    void (*assign)(void), (*reset)(void), (*set)(char *), (*logic)(void);
+    void (*assign)(void), (*reset)(void), (*set)(char *), (*logic)(void), (*strmanip)(int (*)[], int), (*remove)(int, int);
 } compute;
 
 /* unrecognized keyword types */
@@ -82,6 +82,7 @@ extern const char  *RESERVED[];              /* reserved keywords */
 extern const char  *LOGIC_KEYWORDS[];        /* if, then, etc. */
 extern const char  *ASSIGNMENT_OPERATORS[];  /* assignment operators */
 extern const char  *COMPARISON_OPERATORS[];  /* comparison operators */
+extern const char  *SPECIAL_OPERATORS[];     /* . ++ -- etc */
 
 extern int  last_val;   /* last value computed */
 extern char *last_func; /* last operator used */
@@ -98,6 +99,14 @@ extern void compute_set(char *);
 extern void compute_assign(void);
 extern void compute_logic(void);
 extern void compute_reset(void);
+extern void compute_strmanip(int (*)[], int);
+extern void compute_remove(int, int);
+
+/* error.c functions */
+extern void error(int, char *, ...);
+
+/* main.c functions */
+extern void clean_exit(int);
 
 /* strfunc.c functions */
 extern void push_char(char, char *);
@@ -130,21 +139,9 @@ extern void break_from(FILE *, char *, char *);
 extern int  set_next_variable(char *);
 extern int  existing_variable(char *);
 extern int  getval(char *);
+extern int  is_string(char *);
 extern void create_variable(char *);
 extern void function(signed int, char *);
-
-/* equation.c functions */
-extern int  compute_eq(void);  // eq.compute
-extern int  add_eq(char *);    // eq.add
-extern void assign_eq(void);   // eq.assign
-extern void reset_eq(void);    // eq.reset
-extern void set_eq(char *);    // eq.set
-
-/* logic.c functions */
-//extern int  compute_logic(void);  // logic.compute
-extern void reset_logic(void);    // logic.reset
-extern void add_logic(char *);    // logic.add
-extern void set_logic(char *);    // logic.set
 
 /* rk-main.c functions */
 extern void rk_init(void);
@@ -176,6 +173,7 @@ extern void read_loop(FILE *, FILE *);
 #define is_reserved_keyword(s)    str_eq(s, RESERVED)
 #define is_logic_keyword(s)       str_eq(s, LOGIC_KEYWORDS)
 #define is_assignment_operator(s) str_eq(s, ASSIGNMENT_OPERATORS)
+#define is_special_operator(s)    str_eq(s, SPECIAL_OPERATORS)
 #define is_jump_keyword(s)        (strindex(s, "-") == ((signed int) strlen(s)-1))
 #define is_function_keyword(s)    (strindex(s, ":") == ((signed int) strlen(s)-1))
 

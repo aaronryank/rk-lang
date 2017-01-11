@@ -28,32 +28,16 @@ void rk_init(void)
 
     /* initialize compute */
     memset(compute.op, 0, sizeof(compute.op));
-    compute.compute = compute_compute;
-    compute.assign  = compute_assign;
-    compute.reset   = compute_reset;
-    compute.add     = compute_add;
-    compute.set     = compute_set;
-    compute.logic   = compute_logic;
-    compute.idx     = compute.in = 0;
-    compute.keyword = malloc(MAXWORD);
-
-    /* initialize eq op */
-    //eq.compute    = compute_eq;
-    //eq.assign     = assign_eq;
-    //eq.reset      = reset_eq;
-    //eq.add        = add_eq;
-    //eq.set        = set_eq;
-    //eq.idx        = eq.in = eq.last = 0;
-    //eq.assignment = malloc(MAXWORD);
-
-    /* initialize logic */
-    //memset(logic.op, 0, sizeof(logic.op));
-    //logic.compute = compute_logic;
-    //logic.reset   = reset_logic;
-    //logic.add     = add_logic;
-    //logic.set     = set_logic;
-    //logic.in      = logic.idx = 0;
-    //logic.keyword = malloc(MAXWORD);
+    compute.compute  = compute_compute;
+    compute.assign   = compute_assign;
+    compute.reset    = compute_reset;
+    compute.add      = compute_add;
+    compute.set      = compute_set;
+    compute.logic    = compute_logic;
+    compute.strmanip = compute_strmanip;
+    compute.remove   = compute_remove;
+    compute.idx      = compute.in = 0;
+    compute.keyword  = malloc(MAXWORD);
 }
 
 void rk_cleanup(void)
@@ -61,8 +45,6 @@ void rk_cleanup(void)
     int i;
 
     free(last_func);
-    //free(eq.assignment);
-    //free(logic.keyword);
     free(compute.keyword);
 
     for (i = 0; i < variable_count; i++) {
@@ -123,28 +105,6 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
         compute.set(buf);
         reset_last_func();
     }
-
-    /* assignment operator, triggers eq equation */
-    //else if (is_assignment_operator(buf) && (eq.in == 0)) {
-    //    eq.set(buf);
-    //    reset_last_func();
-    //}
-
-    /* logic keyword, triggers logic evaluation */
-    //else if (is_logic_keyword(buf) && (logic.in == 0)) {
-    //    logic.set(buf);
-    //    reset_last_func();
-   // }
-
-    /* add buf to logic */
-    //else if (logic.in == 1) {
-    //    logic.add(buf);
-    //}
-
-    /* add buf to equation */
-    //else if ((eq.in == 1) && !eq.add(buf)) {
-    //    dummy();
-    //}
 
     /* string literals */
     else if ((buf[0] == '\"') && (buf[strlen(buf)-1] == '\"')) {
