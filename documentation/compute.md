@@ -1,5 +1,3 @@
-## COMPUTE.C
-
 ### void compute.set(char \*keyword)
 
   Set `compute.in` to 1, defining that the source file is reading information to be computed.<br/>
