@@ -68,7 +68,7 @@ void rkprint(int idx)
 
     /* set string */
     if (var_list[idx].type == INTEGER) {
-        itoa((int) var_list[idx].value, str);
+        knr_itoa((int) var_list[idx].value, str);
     }
     else if (var_list[idx].type == CHARACTER) {
         str[0] = (char) var_list[idx].value;

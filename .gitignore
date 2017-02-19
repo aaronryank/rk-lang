@@ -6,9 +6,11 @@
 
 # executable
 rk
+rk.exe
 
 # test files
 */*.test
+*/test*
 
 # links, etc.
 */rk

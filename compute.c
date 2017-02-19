@@ -93,7 +93,7 @@ void compute_unary_operate(int idx)
     unary_operate(var_idx, *(compute.op[idx]));
 
     int val = getval(compute.op[var_idx]);
-    itoa(val, compute.op[var_idx]);
+    knr_itoa(val, compute.op[var_idx]);
 
     compute.remove(idx, 1);
 }
