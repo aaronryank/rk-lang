@@ -75,11 +75,16 @@ int main(int argc, char *argv[])
     if (signal(SIGTERM, clean_exit) == SIG_ERR)
         error(0, "Can't catch SIGTERM\n");
 
+/* Windows doesn't have these ??? */
+#ifdef __unix__
+
     if (signal(SIGTSTP, clean_exit) == SIG_ERR)
         error(0, "Error: Can't catch SIGTSTP\n");
 
     if (signal(SIGQUIT, clean_exit) == SIG_ERR)
         error(0, "Error: Can't catch SIGQUIT\n");
+
+#endif
 
     /* setup variables */
     rk_init();

@@ -67,7 +67,11 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
         return;
 
 #ifdef PARSE_DEBUG
+#ifdef __unix__
     printf("---CHECKING \e[31m%s\e[0m---\n", buf);
+#else
+    printf("---CHECKING %s---\n", buf);
+#endif
 #endif
 
     /* check for comments */
@@ -81,7 +85,11 @@ void rk_parse(FILE *src, FILE *dest, char *buf)
     }
 
 #ifdef PARSE_DEBUG
+#ifdef __unix__
     printf("---PARSING  \e[32m%s\e[0m---\n", buf);
+#else
+    printf("---PARSING %s---\n", buf);
+#endif
 #endif
 
 #ifdef DEBUG_STEP

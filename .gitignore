@@ -6,9 +6,17 @@
 
 # executable
 rk
+<<<<<<< HEAD
 
 # test files
 */*.test
+=======
+rk.exe
+
+# test files
+*/*.test
+*/test*
+>>>>>>> 1d37b25290fafed6330c4acb860224b7d365ca78
 
 # links, etc.
 */rk

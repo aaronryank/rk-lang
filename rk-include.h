@@ -112,7 +112,7 @@ extern void clean_exit(int);
 /* strfunc.c functions */
 extern void push_char(char, char *);
 extern void strsnip(char *, int);
-extern void itoa(int, char[]);
+extern void knr_itoa(int, char[]);
 extern char *reverse(char *);
 extern int getword(FILE *, char *, char *);
 extern int strindex(char[], char[]);

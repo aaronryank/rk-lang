@@ -18,7 +18,7 @@ int compute_breakout(char *keyword)
     /* check this first, is_operator evaluates the first character */
     if (is_unary_operator(keyword)) {
         return 0;
-    } 
+    }
     else if (is_operator(keyword)) {
         if (compute.last == OPERATOR) {
             return 1;
@@ -93,7 +93,7 @@ void compute_unary_operate(int idx)
     unary_operate(var_idx, *(compute.op[idx]));
 
     int val = getval(compute.op[var_idx]);
-    itoa(val, compute.op[var_idx]);
+    knr_itoa(val, compute.op[var_idx]);
 
     compute.remove(idx, 1);
 }

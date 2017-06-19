@@ -60,7 +60,7 @@ int strindex(char s[], char t[])
 }
 
 /* itoa from "The C Programming Language Second Edition" (aka K&R) */
-void itoa(int n, char s[])
+void knr_itoa(int n, char s[])
 {
     int i, sign;
     if ((sign = n) < 0)        /* record sign */
