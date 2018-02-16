@@ -11,7 +11,7 @@ char *src_fname, *dest_fname;
 
 /*
 0 | -o | set output file
-1 | 
+1 | -e | evaluate (no rk:start or rk:end)
 2 | 
 3 | 
 4 | 
@@ -102,6 +102,7 @@ void parse(char *arg)
 {
     switch (arg[1]) {
     case 'o': set_arg(0, 1);
+    case 'e': set_arg(1, 1);
     }
 }
 

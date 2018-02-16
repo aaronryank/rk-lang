@@ -10,9 +10,10 @@ void read_loop(FILE *src, FILE *dest)
     memset(buf, 0, sizeof(buf));
     delim = malloc(MAXWORD);
 
-    while (getword(src, buf, " \n"))
-        if (!strcmp(buf, "rk:start"))
-            break;
+    if (!ARGS[1])
+        while (getword(src, buf, " \n"))
+            if (!strcmp(buf, "rk:start"))
+                break;
 
     ret = 0;
     while (!ret) {
